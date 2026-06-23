@@ -1,0 +1,72 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Category {
+  id       Int       @id @default(autoincrement())
+  name     String    @unique
+  slug     String    @unique
+  image    String    // Image URL or local file path
+  products Product[]
+}
+
+model Product {
+  id          Int         @id @default(autoincrement())
+  name        String
+  description String      @db.Text
+  price       Decimal     @db.Decimal(10, 2)
+  image       String      // Image URL or local file path
+  slug        String      @unique
+  categoryId  Int
+  category    Category    @relation(fields: [categoryId], references: [id])
+  flavors     String      // Comma-separated list: "Chocolate Ferrero, Vanilla Raspberry, Pistachio"
+  sizes       String      // Comma-separated list: "1kg (approx. 6-8 portions), 1.5kg, 2kg"
+  isActive    Boolean     @default(true)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  orderItems  OrderItem[]
+}
+
+model Order {
+  id              Int         @id @default(autoincrement())
+  customerName    String
+  customerPhone   String
+  customerEmail   String?
+  deliveryAddress String      @db.Text
+  deliveryDate    DateTime    // Stored as date
+  deliveryTimeSlot String     // e.g. "09:00 AM - 12:00 PM", "12:00 PM - 03:00 PM"
+  paymentMethod   String      // "Cash on Delivery" or "Card on Delivery"
+  totalAmount     Decimal     @db.Decimal(10, 2)
+  status          String    @default("Pending")
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+  orderItems      OrderItem[]
+}
+
+model OrderItem {
+  id        Int     @id @default(autoincrement())
+  orderId   Int
+  order     Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId Int
+  product   Product @relation(fields: [productId], references: [id])
+  quantity  Int
+  price     Decimal @db.Decimal(10, 2)
+  flavor    String
+  size      String
+  message   String? // Custom text message to write on the cake
+}
+
+model AdminUser {
+  id        Int      @id @default(autoincrement())
+  username  String   @unique
+  password  String   // Hashed password
+  createdAt DateTime @default(now())
+}
