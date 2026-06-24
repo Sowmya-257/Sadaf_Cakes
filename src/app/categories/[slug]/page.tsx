@@ -21,20 +21,40 @@ export default async function CategoryPage({ params }: Props) {
   const categoryName = currentCategory ? currentCategory.name : "Category";
 
   return (
-    <div className="section-padding">
-      <div className="container">
-        {/* Category Header */}
-        <div style={{ borderBottom: "1px solid var(--border-light)", paddingBottom: "24px", marginBottom: "40px" }}>
-          <span style={{ fontSize: "12px", textTransform: "uppercase", letterSpacing: "0.1em", color: "var(--primary-dark)", fontWeight: 600 }}>
+    <div>
+      {/* Category Parallax Banner */}
+      <div
+        style={{
+          position: "relative",
+          height: "350px",
+          width: "100%",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          backgroundImage: `linear-gradient(to bottom, rgba(36, 32, 28, 0.6), rgba(36, 32, 28, 0.6)), url('${currentCategory?.image || "https://images.unsplash.com/photo-1535141192574-5d4897c13636?w=1600&auto=format&fit=crop&q=80"}')`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundAttachment: "fixed",
+          color: "white",
+          textAlign: "center",
+        }}
+      >
+        <div className="container animate-fade-in-up">
+          <span style={{ fontSize: "12px", textTransform: "uppercase", letterSpacing: "0.2em", color: "var(--primary-gold)", fontWeight: 600, display: "block", marginBottom: "12px" }}>
             Collection
           </span>
-          <h1 style={{ fontSize: "48px", marginTop: "8px" }}>{categoryName}</h1>
-          <p style={{ color: "var(--text-muted)", marginTop: "8px" }}>
-            Showing {products.length} custom creations. Select a cake below to customize flavor, size, and adding your message.
+          <h1 style={{ fontSize: "56px", fontFamily: "var(--font-serif)", fontWeight: "300", color: "white", margin: 0 }}>
+            {categoryName}
+          </h1>
+          <p style={{ color: "#eaddd3", fontSize: "16px", marginTop: "12px", maxWidth: "600px", margin: "12px auto 0 auto", fontWeight: "300", lineHeight: "1.6" }}>
+            Explore our curated selection of bespoke creations. Handcrafted with premium ingredients.
           </p>
         </div>
+      </div>
 
-        {/* Products Grid */}
+      <div className="section-padding" style={{ paddingTop: "20px" }}>
+        <div className="container">
+          {/* Products Grid */}
         {products.length === 0 ? (
           <div style={{ textAlign: "center", padding: "80px 0" }}>
             <p style={{ fontSize: "18px", color: "var(--text-muted)", marginBottom: "20px" }}>
@@ -72,6 +92,7 @@ export default async function CategoryPage({ params }: Props) {
           </div>
         )}
       </div>
+    </div>
     </div>
   );
 }

@@ -10,8 +10,8 @@ export default function Footer() {
             <p>
               Crafting premium customized cakes and desserts for birthday celebrations, weddings, and special events across the UAE.
             </p>
-            <div style={{ color: "var(--primary-gold)", fontWeight: 500 }}>
-              📍 Al Quoz, Dubai, United Arab Emirates
+            <div style={{ color: "#a4978d", fontSize: "13px" }}>
+              <span style={{ color: "var(--primary-gold)", fontWeight: 600, marginRight: "6px" }}>LOCATION:</span> Al Quoz, Dubai, United Arab Emirates
             </div>
           </div>
 
@@ -38,16 +38,16 @@ export default function Footer() {
             <h4 className="footer-title">Contact Us</h4>
             <ul className="footer-links" style={{ color: "#a4978d" }}>
               <li style={{ marginBottom: "8px" }}>
-                📞 <strong>Phone:</strong> <a href="tel:+971581988276" style={{ color: "white" }}>+971 58 198 8276</a>
+                <strong>Phone:</strong> <a href="tel:+971581988276" style={{ color: "white", marginLeft: "4px" }}>+971 58 198 8276</a>
               </li>
               <li style={{ marginBottom: "8px" }}>
-                💬 <strong>WhatsApp:</strong> <a href="https://wa.me/971581988276" target="_blank" rel="noopener noreferrer" style={{ color: "white" }}>Chat with us</a>
+                <strong>WhatsApp:</strong> <a href="https://wa.me/971581988276" target="_blank" rel="noopener noreferrer" style={{ color: "white", marginLeft: "4px" }}>Chat with us</a>
               </li>
               <li style={{ marginBottom: "8px" }}>
-                ✉️ <strong>Email:</strong> <a href="mailto:info@sadafcakes.com" style={{ color: "white" }}>info@sadafcakes.com</a>
+                <strong>Email:</strong> <a href="mailto:info@sadafcakes.com" style={{ color: "white", marginLeft: "4px" }}>info@sadafcakes.com</a>
               </li>
               <li>
-                ⏰ <strong>Hours:</strong> Daily 8:00 AM - 12:00 AM
+                <strong>Hours:</strong> <span style={{ marginLeft: "4px" }}>Daily 8:00 AM - 12:00 AM</span>
               </li>
             </ul>
           </div>
@@ -55,7 +55,6 @@ export default function Footer() {
 
         <div className="footer-bottom">
           <p>&copy; {new Date().getFullYear()} Sadaf Cakes LLC. All rights reserved.</p>
-          <p>Made with Next.js & MySQL</p>
         </div>
       </div>
     </footer>

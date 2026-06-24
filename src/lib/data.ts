@@ -11,31 +11,31 @@ export const MOCK_CATEGORIES = [
     id: 1,
     name: "Birthday Cakes",
     slug: "birthday-cakes",
-    image: "https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=600&auto=format&fit=crop&q=80",
+    image: "/images/birthday_collection_bg.png",
   },
   {
     id: 2,
     name: "Wedding Cakes",
     slug: "wedding-cakes",
-    image: "https://images.unsplash.com/photo-1535254973040-607b474cb50d?w=600&auto=format&fit=crop&q=80",
+    image: "/images/wedding_collection_bg.png",
   },
   {
     id: 3,
     name: "Gender Reveal Cakes",
     slug: "gender-reveal-cakes",
-    image: "https://images.unsplash.com/photo-1542826438-bd32f43d626f?w=600&auto=format&fit=crop&q=80",
+    image: "/images/gender_reveal_collection_bg.png",
   },
   {
     id: 4,
     name: "Kids Cakes",
     slug: "kids-cakes",
-    image: "https://images.unsplash.com/photo-1558961363-fa8fdf82db35?w=600&auto=format&fit=crop&q=80",
+    image: "/images/kids_collection_bg.png",
   },
   {
     id: 5,
     name: "Sweet Sets",
     slug: "sweet-sets",
-    image: "https://images.unsplash.com/photo-1550617931-e17a7b70dce2?w=600&auto=format&fit=crop&q=80",
+    image: "/images/sweet_sets_collection_bg.png",
   },
 ];
 

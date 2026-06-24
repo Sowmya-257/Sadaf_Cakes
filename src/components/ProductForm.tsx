@@ -93,21 +93,21 @@ export default function ProductForm({ product }: { product: ProductType }) {
       {/* 4. Quantity Selector */}
       <div className="selector-group" style={{ maxWidth: "120px" }}>
         <label className="selector-label">Quantity</label>
-        <div style={{ display: "flex", alignItems: "center", border: "1px solid var(--border-light)", borderRadius: "var(--radius-sm)", backgroundColor: "white", overflow: "hidden" }}>
+        <div style={{ display: "flex", alignItems: "center", border: "1px solid var(--border-light)", borderRadius: "24px", backgroundColor: "white", overflow: "hidden", height: "42px", padding: "0 4px" }}>
           <button
             type="button"
             onClick={() => setQuantity(q => Math.max(1, q - 1))}
-            style={{ width: "36px", height: "36px", background: "transparent", border: "none", cursor: "pointer", fontSize: "16px" }}
+            style={{ width: "36px", height: "100%", background: "transparent", border: "none", cursor: "pointer", fontSize: "16px", color: "var(--text-muted)", display: "flex", alignItems: "center", justifyContent: "center" }}
           >
-            -
+            —
           </button>
-          <span style={{ flexGrow: 1, textAlign: "center", fontSize: "14px", fontWeight: 500 }}>
+          <span style={{ flexGrow: 1, textAlign: "center", fontSize: "14px", fontWeight: 600, color: "var(--text-main)" }}>
             {quantity}
           </span>
           <button
             type="button"
             onClick={() => setQuantity(q => q + 1)}
-            style={{ width: "36px", height: "36px", background: "transparent", border: "none", cursor: "pointer", fontSize: "16px" }}
+            style={{ width: "36px", height: "100%", background: "transparent", border: "none", cursor: "pointer", fontSize: "16px", color: "var(--text-muted)", display: "flex", alignItems: "center", justifyContent: "center" }}
           >
             +
           </button>
@@ -117,9 +117,25 @@ export default function ProductForm({ product }: { product: ProductType }) {
       {/* 5. Add to Cart Button */}
       <button
         onClick={handleAddToCart}
-        className="btn btn-primary"
-        style={{ width: "100%", padding: "16px", marginTop: "10px", fontSize: "16px" }}
+        className="btn-luxury-shimmer"
+        style={{ width: "100%", padding: "16px", marginTop: "10px", fontSize: "14px" }}
       >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="16"
+          height="16"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          style={{ marginRight: "6px" }}
+        >
+          <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
+          <line x1="3" y1="6" x2="21" y2="6" />
+          <path d="M16 10a4 4 0 0 1-8 0" />
+        </svg>
         Add to Shopping Cart
       </button>
 
