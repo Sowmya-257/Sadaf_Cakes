@@ -13,6 +13,7 @@ export async function POST(req: NextRequest) {
       deliveryDate,
       deliveryTimeSlot,
       paymentMethod,
+      notes,
       totalAmount,
       items,
     } = body;
@@ -36,6 +37,7 @@ export async function POST(req: NextRequest) {
           deliveryDate: new Date(deliveryDate),
           deliveryTimeSlot,
           paymentMethod,
+          notes: notes || null,
           totalAmount,
           status: "Pending",
           orderItems: {
@@ -46,10 +48,45 @@ export async function POST(req: NextRequest) {
               flavor: item.flavor,
               size: item.size,
               message: item.message || null,
+              specialInstructions: item.specialInstructions || null,
             })),
           },
         },
       });
+      
+      // Mirror database order to mock storage as backup
+      try {
+        const currentOrders = loadOrdersFromStorage();
+        const newOrder = {
+          id: order.id,
+          customerName,
+          customerPhone,
+          customerEmail,
+          deliveryAddress,
+          deliveryDate,
+          deliveryTimeSlot,
+          paymentMethod,
+          notes: notes || null,
+          totalAmount,
+          status: "Pending",
+          createdAt: order.createdAt.toISOString(),
+          orderItems: items.map((item: any, index: number) => ({
+            id: index + 1,
+            productId: item.productId,
+            quantity: item.quantity,
+            price: item.price,
+            flavor: item.flavor,
+            size: item.size,
+            message: item.message || null,
+            specialInstructions: item.specialInstructions || null,
+            product: { name: item.name || "Cake" }
+          }))
+        };
+        currentOrders.unshift(newOrder);
+        saveOrdersToStorage(currentOrders);
+      } catch (mockErr) {
+        console.error("Failed to mirror DB order to mock storage:", mockErr);
+      }
 
       return NextResponse.json({
         success: true,
@@ -71,6 +108,7 @@ export async function POST(req: NextRequest) {
         deliveryDate,
         deliveryTimeSlot,
         paymentMethod,
+        notes: notes || null,
         totalAmount,
         status: "Pending",
         createdAt: new Date().toISOString(),
@@ -82,20 +120,13 @@ export async function POST(req: NextRequest) {
           flavor: item.flavor,
           size: item.size,
           message: item.message || null,
+          specialInstructions: item.specialInstructions || null,
           product: { name: item.name || "Cake" }
         }))
       };
 
       currentOrders.unshift(newOrder); // Add to the beginning of the list
       saveOrdersToStorage(currentOrders);
-
-      console.log("----------------------------------------");
-      console.log(`[DEMO FALLBACK] Placed Order #${nextId}`);
-      console.log(`Customer: ${customerName} (${customerPhone})`);
-      console.log(`Address: ${deliveryAddress}`);
-      console.log(`Delivery Date: ${deliveryDate} @ ${deliveryTimeSlot}`);
-      console.log("Saved order to mock_orders.json successfully.");
-      console.log("----------------------------------------");
 
       return NextResponse.json({
         success: true,

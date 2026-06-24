@@ -13,6 +13,7 @@ export default function CheckoutPage() {
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
   const [address, setAddress] = useState("");
+  const [notes, setNotes] = useState("");
   const [deliveryDate, setDeliveryDate] = useState("");
   const [timeSlot, setTimeSlot] = useState("09:00 AM - 12:00 PM");
   const [paymentMethod, setPaymentMethod] = useState("Cash on Delivery");
@@ -21,6 +22,10 @@ export default function CheckoutPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
   const [orderId, setOrderId] = useState<string | null>(null);
+
+  // Success display state (to preserve details after clearing cart)
+  const [orderedItems, setOrderedItems] = useState<any[]>([]);
+  const [orderedTotal, setOrderedTotal] = useState(0);
 
   // Validate form
   const isFormValid = name && phone && address && deliveryDate && cart.length > 0;
@@ -37,6 +42,7 @@ export default function CheckoutPage() {
       customerPhone: phone,
       customerEmail: email || null,
       deliveryAddress: address,
+      notes: notes || null,
       deliveryDate: deliveryDate,
       deliveryTimeSlot: timeSlot,
       paymentMethod: paymentMethod,
@@ -49,6 +55,7 @@ export default function CheckoutPage() {
         flavor: item.flavor,
         size: item.size,
         message: item.message,
+        specialInstructions: item.specialInstructions || null,
       })),
     };
 
@@ -63,6 +70,8 @@ export default function CheckoutPage() {
 
       if (response.ok && result.success) {
         setOrderId(result.orderId);
+        setOrderedItems(cart);
+        setOrderedTotal(cartTotal);
         clearCart(); // Clear cart after successful order
       } else {
         setErrorMsg(result.message || "Something went wrong while placing your order.");
@@ -72,6 +81,8 @@ export default function CheckoutPage() {
       // Fallback simulation: If API fails (e.g. database not running), simulate success for offline mode
       const mockId = `M-${Math.floor(1000 + Math.random() * 9000)}`;
       setOrderId(mockId);
+      setOrderedItems(cart);
+      setOrderedTotal(cartTotal);
       clearCart();
     } finally {
       setIsSubmitting(false);
@@ -80,9 +91,19 @@ export default function CheckoutPage() {
 
   // Success Screen
   if (orderId) {
+    // Generate WhatsApp text details for ordered items
+    const itemsText = orderedItems.map((item) => {
+      let txt = `- ${item.name} (Qty: ${item.quantity}, ${item.size}, ${item.flavor})`;
+      if (item.message) txt += `\n  Message: "${item.message}"`;
+      if (item.specialInstructions) txt += `\n  Requests: "${item.specialInstructions}"`;
+      return txt;
+    }).join("\n");
+
+    const notesText = notes ? `\nOrder Notes: ${notes}` : "";
+
     // Generate WhatsApp text for easy sharing
     const whatsappText = encodeURIComponent(
-      `Hi Sadaf Cakes, I placed a new order!\n\nOrder ID: #${orderId}\nName: ${name}\nPhone: ${phone}\nDelivery: ${deliveryDate} (${timeSlot})\nTotal Amount: AED ${cartTotal.toFixed(2)}\nPayment: ${paymentMethod}\n\nPlease confirm my order. Thank you!`
+      `Hi Sadaf Cakes, I placed a new order!\n\nOrder ID: #${orderId}\nName: ${name}\nPhone: ${phone}\nDelivery: ${deliveryDate} (${timeSlot})\nTotal Amount: AED ${orderedTotal.toFixed(2)}\nPayment: ${paymentMethod}\n\nItems:\n${itemsText}${notesText}\n\nPlease confirm my order. Thank you!`
     );
 
     return (
@@ -117,8 +138,13 @@ export default function CheckoutPage() {
             <p style={{ fontSize: "14px", margin: "6px 0" }}>
               <strong>Address:</strong> {address}
             </p>
+            {notes && (
+              <p style={{ fontSize: "14px", margin: "6px 0" }}>
+                <strong>Delivery Notes:</strong> {notes}
+              </p>
+            )}
             <p style={{ fontSize: "14px", margin: "6px 0" }}>
-              <strong>Total Amount:</strong> AED {cartTotal.toFixed(2)}
+              <strong>Total Amount:</strong> AED {orderedTotal.toFixed(2)}
             </p>
             <p style={{ fontSize: "14px", margin: "6px 0" }}>
               <strong>Payment Method:</strong> {paymentMethod} (At time of delivery)
@@ -226,6 +252,18 @@ export default function CheckoutPage() {
                   style={{ minHeight: "80px", resize: "vertical" }}
                   value={address}
                   onChange={(e) => setAddress(e.target.value)}
+                />
+              </div>
+
+              {/* Delivery Notes / Comments */}
+              <div className="form-group">
+                <label className="form-label">Delivery Notes / Special Comments (Optional)</label>
+                <textarea
+                  placeholder="e.g. Gate code, ring bell twice, call on arrival, or any special delivery requests..."
+                  className="form-input"
+                  style={{ minHeight: "80px", resize: "vertical" }}
+                  value={notes}
+                  onChange={(e) => setNotes(e.target.value)}
                 />
               </div>
 

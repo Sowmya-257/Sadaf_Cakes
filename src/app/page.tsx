@@ -176,7 +176,7 @@ export default async function Home() {
           borderBottom: "1px solid var(--border-light)",
         }}
       >
-        <div className="container" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "80px", alignItems: "center" }}>
+        <div className="container about-grid">
           <div>
             <span
               style={{

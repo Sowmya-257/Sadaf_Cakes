@@ -44,6 +44,7 @@ model Order {
   deliveryDate    DateTime    // Stored as date
   deliveryTimeSlot String     // e.g. "09:00 AM - 12:00 PM", "12:00 PM - 03:00 PM"
   paymentMethod   String      // "Cash on Delivery" or "Card on Delivery"
+  notes           String?     @db.Text
   totalAmount     Decimal     @db.Decimal(10, 2)
   status          String    @default("Pending")
   createdAt       DateTime    @default(now())
@@ -62,6 +63,7 @@ model OrderItem {
   flavor    String
   size      String
   message   String? // Custom text message to write on the cake
+  specialInstructions String? @db.Text
 }
 
 model AdminUser {

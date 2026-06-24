@@ -23,6 +23,7 @@ export default function ProductForm({ product }: { product: ProductType }) {
   const [selectedFlavor, setSelectedFlavor] = useState(flavorOptions[0] || "");
   const [selectedSize, setSelectedSize] = useState(sizeOptions[0] || "");
   const [message, setMessage] = useState("");
+  const [specialInstructions, setSpecialInstructions] = useState("");
   const [quantity, setQuantity] = useState(1);
 
   const handleAddToCart = () => {
@@ -34,8 +35,12 @@ export default function ProductForm({ product }: { product: ProductType }) {
       flavor: selectedFlavor,
       size: selectedSize,
       message: message,
+      specialInstructions: specialInstructions,
       quantity: quantity,
     });
+    // Reset special instructions after adding to cart
+    setSpecialInstructions("");
+    setMessage("");
   };
 
   return (
@@ -87,6 +92,22 @@ export default function ProductForm({ product }: { product: ProductType }) {
         />
         <span style={{ fontSize: "11px", color: "var(--text-muted)", textAlign: "right" }}>
           Maximum 60 characters
+        </span>
+      </div>
+
+      {/* 3.5. Special Instructions / Comments */}
+      <div className="selector-group">
+        <label className="selector-label">Customization Requests / Comments (Optional)</label>
+        <textarea
+          className="custom-text-input"
+          placeholder="e.g. Eggless, less sugar, design preferences, colors..."
+          style={{ minHeight: "60px", resize: "vertical", fontFamily: "inherit", padding: "10px 14px", borderRadius: "12px", fontSize: "14px" }}
+          value={specialInstructions}
+          onChange={(e) => setSpecialInstructions(e.target.value)}
+          maxLength={300}
+        />
+        <span style={{ fontSize: "11px", color: "var(--text-muted)", textAlign: "right" }}>
+          Maximum 300 characters
         </span>
       </div>
 

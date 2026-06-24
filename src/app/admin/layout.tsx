@@ -112,10 +112,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               Login to Admin Portal
             </button>
           </form>
-
-          <p style={{ fontSize: "11px", color: "var(--text-muted)", textAlign: "center", marginTop: "16px" }}>
-            Demo credentials: <strong>admin</strong> / <strong>adminpassword</strong>
-          </p>
         </div>
       </div>
     );

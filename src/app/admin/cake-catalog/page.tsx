@@ -40,6 +40,12 @@ export default function CakeCatalogPage() {
   const [isProductSubmitting, setIsProductSubmitting] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
 
+  // Filters & Pagination State
+  const [searchTerm, setSearchTerm] = useState("");
+  const [categoryFilter, setCategoryFilter] = useState("All");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(5);
+
   const fetchCatalogData = async (authToken: string) => {
     setIsDataLoading(true);
     setDataError("");
@@ -232,6 +238,27 @@ export default function CakeCatalogPage() {
     return category ? category.name : `Category #${catId}`;
   };
 
+  // Filter products based on search term and category
+  const filteredProducts = products.filter((prod) => {
+    const matchesSearch =
+      prod.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      prod.description.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesCategory =
+      categoryFilter === "All" || prod.categoryId.toString() === categoryFilter;
+    return matchesSearch && matchesCategory;
+  });
+
+  // Pagination calculations
+  const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
+  const activePage = Math.max(1, Math.min(currentPage, totalPages || 1));
+  const indexOfLastItem = activePage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = filteredProducts.slice(indexOfFirstItem, indexOfLastItem);
+
+  const handlePageChange = (pageNumber: number) => {
+    setCurrentPage(pageNumber);
+  };
+
   return (
     <div>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
@@ -251,63 +278,208 @@ export default function CakeCatalogPage() {
 
       {dataError && <div className="alert alert-error">{dataError}</div>}
 
+      {/* Search & Filter Bar */}
+      <div style={{
+        display: "flex",
+        gap: "20px",
+        marginBottom: "24px",
+        backgroundColor: "white",
+        padding: "16px 20px",
+        borderRadius: "var(--radius-md)",
+        border: "1px solid var(--border-light)",
+        boxShadow: "var(--shadow-light)",
+        alignItems: "center",
+        flexWrap: "wrap"
+      }}>
+        {/* Search */}
+        <div style={{ flex: "1", minWidth: "250px" }}>
+          <label style={{ fontSize: "11px", textTransform: "uppercase", letterSpacing: "0.05em", color: "var(--text-muted)", display: "block", marginBottom: "6px", fontWeight: 600 }}>Search Catalog</label>
+          <div style={{ position: "relative" }}>
+            <span style={{ position: "absolute", left: "14px", top: "50%", transform: "translateY(-50%)", color: "var(--text-muted)" }}>🔍</span>
+            <input
+              type="text"
+              placeholder="Search by cake name or details..."
+              className="form-input"
+              value={searchTerm}
+              onChange={(e) => { setSearchTerm(e.target.value); setCurrentPage(1); }}
+              style={{ paddingLeft: "40px", margin: 0 }}
+            />
+          </div>
+        </div>
+
+        {/* Category Filter */}
+        <div style={{ minWidth: "200px" }}>
+          <label style={{ fontSize: "11px", textTransform: "uppercase", letterSpacing: "0.05em", color: "var(--text-muted)", display: "block", marginBottom: "6px", fontWeight: 600 }}>Filter by Collection</label>
+          <select
+            className="form-input"
+            value={categoryFilter}
+            onChange={(e) => { setCategoryFilter(e.target.value); setCurrentPage(1); }}
+            style={{ margin: 0 }}
+          >
+            <option value="All">All Collections</option>
+            {categories.map((cat) => (
+              <option key={cat.id} value={cat.id.toString()}>{cat.name}</option>
+            ))}
+          </select>
+        </div>
+
+        {/* Items per Page */}
+        <div style={{ minWidth: "120px" }}>
+          <label style={{ fontSize: "11px", textTransform: "uppercase", letterSpacing: "0.05em", color: "var(--text-muted)", display: "block", marginBottom: "6px", fontWeight: 600 }}>Show Entries</label>
+          <select
+            className="form-input"
+            value={itemsPerPage}
+            onChange={(e) => { setItemsPerPage(parseInt(e.target.value)); setCurrentPage(1); }}
+            style={{ margin: 0 }}
+          >
+            <option value={5}>5 entries</option>
+            <option value={10}>10 entries</option>
+            <option value={20}>20 entries</option>
+            <option value={50}>50 entries</option>
+          </select>
+        </div>
+      </div>
+
       <div className="table-card">
         {isDataLoading ? (
           <div style={{ padding: "40px", textAlign: "center" }}>Loading products...</div>
         ) : products.length === 0 ? (
           <div style={{ padding: "40px", textAlign: "center" }}>No products created yet.</div>
+        ) : filteredProducts.length === 0 ? (
+          <div style={{ padding: "40px", textAlign: "center" }}>No cake designs match your search/filters.</div>
         ) : (
-          <table className="admin-table">
-            <thead>
-              <tr>
-                <th>Image</th>
-                <th>Cake Name</th>
-                <th>Category</th>
-                <th>Base Price</th>
-                <th>Flavors & Sizes</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {products.map((prod) => (
-                <tr key={prod.id}>
-                  <td>
-                    <div style={{ width: "50px", height: "50px", position: "relative", borderRadius: "4px", overflow: "hidden", border: "1px solid var(--border-light)" }}>
-                      <img src={prod.image} alt={prod.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-                    </div>
-                  </td>
-                  <td>
-                    <strong>{prod.name}</strong>
-                    <div style={{ fontSize: "11px", color: "var(--text-muted)", marginTop: "4px", maxWidth: "250px", overflow: "hidden", textOverflow: "ellipsis", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" }}>
-                      {prod.description}
-                    </div>
-                  </td>
-                  <td>
-                    <span className="status-badge confirmed" style={{ fontSize: "11px" }}>
-                      {getCategoryName(prod.categoryId)}
-                    </span>
-                  </td>
-                  <td style={{ fontWeight: 600, color: "var(--primary-dark)" }}>
-                    AED {Number(prod.price).toFixed(2)}
-                  </td>
-                  <td>
-                    <div style={{ fontSize: "12px" }}>
-                      <strong>Flavors:</strong> {prod.flavors} <br />
-                      <strong>Sizes:</strong> {prod.sizes}
-                    </div>
-                  </td>
-                  <td>
-                    <button className="action-btn" onClick={() => openProductModal(prod)}>
-                      Edit
-                    </button>
-                    <button className="action-btn" style={{ color: "#c95d5d" }} onClick={() => handleDeleteProduct(prod.id)}>
-                      Delete
-                    </button>
-                  </td>
+          <>
+            <table className="admin-table">
+              <thead>
+                <tr>
+                  <th>Image</th>
+                  <th>Cake Name</th>
+                  <th>Category</th>
+                  <th>Base Price</th>
+                  <th>Flavors & Sizes</th>
+                  <th>Actions</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {currentItems.map((prod) => (
+                  <tr key={prod.id}>
+                    <td>
+                      <div style={{ width: "50px", height: "50px", position: "relative", borderRadius: "4px", overflow: "hidden", border: "1px solid var(--border-light)" }}>
+                        <img src={prod.image} alt={prod.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                      </div>
+                    </td>
+                    <td>
+                      <strong>{prod.name}</strong>
+                      <div style={{ fontSize: "11px", color: "var(--text-muted)", marginTop: "4px", maxWidth: "250px", overflow: "hidden", textOverflow: "ellipsis", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" }}>
+                        {prod.description}
+                      </div>
+                    </td>
+                    <td>
+                      <span className="status-badge confirmed" style={{ fontSize: "11px" }}>
+                        {getCategoryName(prod.categoryId)}
+                      </span>
+                    </td>
+                    <td style={{ fontWeight: 600, color: "var(--primary-dark)" }}>
+                      AED {Number(prod.price).toFixed(2)}
+                    </td>
+                    <td>
+                      <div style={{ fontSize: "12px" }}>
+                        <strong>Flavors:</strong> {prod.flavors} <br />
+                        <strong>Sizes:</strong> {prod.sizes}
+                      </div>
+                    </td>
+                    <td>
+                      <button className="action-btn" onClick={() => openProductModal(prod)}>
+                        Edit
+                      </button>
+                      <button className="action-btn" style={{ color: "#c95d5d" }} onClick={() => handleDeleteProduct(prod.id)}>
+                        Delete
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+
+            {/* Pagination Footer */}
+            <div style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              padding: "16px 20px",
+              borderTop: "1px solid var(--border-light)",
+              backgroundColor: "#fafafa",
+              flexWrap: "wrap",
+              gap: "12px"
+            }}>
+              <div style={{ fontSize: "14px", color: "var(--text-muted)" }}>
+                Showing <strong>{indexOfFirstItem + 1}</strong> to <strong>{Math.min(indexOfLastItem, filteredProducts.length)}</strong> of <strong>{filteredProducts.length}</strong> entries
+              </div>
+              <div style={{ display: "flex", gap: "6px", alignItems: "center" }}>
+                <button
+                  type="button"
+                  onClick={() => handlePageChange(activePage - 1)}
+                  disabled={activePage === 1}
+                  style={{
+                    padding: "6px 12px",
+                    borderRadius: "4px",
+                    border: "1px solid var(--border-light)",
+                    backgroundColor: activePage === 1 ? "#f3f3f3" : "white",
+                    color: activePage === 1 ? "var(--text-muted)" : "var(--text-main)",
+                    cursor: activePage === 1 ? "not-allowed" : "pointer",
+                    fontSize: "13px",
+                    fontWeight: 500
+                  }}
+                >
+                  Previous
+                </button>
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNum) => {
+                  const isActive = pageNum === activePage;
+                  return (
+                    <button
+                      key={pageNum}
+                      type="button"
+                      onClick={() => handlePageChange(pageNum)}
+                      style={{
+                        minWidth: "32px",
+                        height: "32px",
+                        borderRadius: "4px",
+                        border: "1px solid",
+                        borderColor: isActive ? "var(--primary-gold)" : "var(--border-light)",
+                        backgroundColor: isActive ? "var(--primary-gold)" : "white",
+                        color: isActive ? "white" : "var(--text-main)",
+                        cursor: "pointer",
+                        fontSize: "13px",
+                        fontWeight: 600,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center"
+                      }}
+                    >
+                      {pageNum}
+                    </button>
+                  );
+                })}
+                <button
+                  type="button"
+                  onClick={() => handlePageChange(activePage + 1)}
+                  disabled={activePage === totalPages || totalPages === 0}
+                  style={{
+                    padding: "6px 12px",
+                    borderRadius: "4px",
+                    border: "1px solid var(--border-light)",
+                    backgroundColor: (activePage === totalPages || totalPages === 0) ? "#f3f3f3" : "white",
+                    color: (activePage === totalPages || totalPages === 0) ? "var(--text-muted)" : "var(--text-main)",
+                    cursor: (activePage === totalPages || totalPages === 0) ? "not-allowed" : "pointer",
+                    fontSize: "13px",
+                    fontWeight: 500
+                  }}
+                >
+                  Next
+                </button>
+              </div>
+            </div>
+          </>
         )}
       </div>
 

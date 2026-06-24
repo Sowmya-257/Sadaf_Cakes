@@ -25,35 +25,22 @@ export async function POST(req: NextRequest) {
           return NextResponse.json({
             success: true,
             token: "admin-secure-token-12345",
-            message: "Login successful (Database)",
+            message: "Login successful",
           });
         }
       }
-      
-      // If we found a user but password didn't match
-      if (admin) {
-        return NextResponse.json(
-          { success: false, message: "Invalid username or password" },
-          { status: 401 }
-        );
-      }
+
+      return NextResponse.json(
+        { success: false, message: "Invalid username or password" },
+        { status: 401 }
+      );
     } catch (dbError) {
-      console.warn("Database lookup failed during login. Using mock credential fallback.", dbError);
+      console.error("Database lookup failed during login:", dbError);
+      return NextResponse.json(
+        { success: false, message: "Authentication server error" },
+        { status: 500 }
+      );
     }
-
-    // Resilient Fallback: If DB is offline or empty, allow login using default credentials
-    if (username === "admin" && password === "adminpassword") {
-      return NextResponse.json({
-        success: true,
-        token: "admin-secure-token-12345",
-        message: "Login successful (Demo Fallback Mode)",
-      });
-    }
-
-    return NextResponse.json(
-      { success: false, message: "Invalid username or password" },
-      { status: 401 }
-    );
   } catch (error) {
     console.error("Login API Error:", error);
     return NextResponse.json(

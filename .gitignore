@@ -39,5 +39,7 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
-
 /src/generated/prisma
+
+# local simulated data/databases
+/src/lib/mock_*.json

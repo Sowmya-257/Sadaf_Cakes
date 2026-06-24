@@ -11,6 +11,7 @@ export interface CartItem {
   flavor: string;
   size: string;
   message: string;
+  specialInstructions?: string;
   quantity: number;
 }
 
@@ -54,13 +55,14 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
   const addToCart = (newItem: Omit<CartItem, "id">) => {
     setCart((prevCart) => {
-      // Find if item with same configuration (id, flavor, size, message) already exists
+      // Find if item with same configuration (id, flavor, size, message, specialInstructions) already exists
       const existingItemIndex = prevCart.findIndex(
         (item) =>
           item.productId === newItem.productId &&
           item.flavor === newItem.flavor &&
           item.size === newItem.size &&
-          item.message === newItem.message
+          item.message === newItem.message &&
+          item.specialInstructions === newItem.specialInstructions
       );
 
       if (existingItemIndex > -1) {

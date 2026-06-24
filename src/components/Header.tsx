@@ -1,16 +1,32 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { useCart } from "@/context/CartContext";
 import Image from "next/image";
 
 export default function Header() {
   const { cart, removeFromCart, cartCount, cartTotal, isCartOpen, setIsCartOpen } = useCart();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   return (
     <>
       <header className="header">
         <div className="container header-container">
+          {/* Hamburger Menu Icon for Mobile */}
+          <button 
+            className="mobile-menu-btn" 
+            onClick={() => setIsMobileMenuOpen(true)}
+            aria-label="Open Menu"
+            type="button"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="3" y1="12" x2="21" y2="12"></line>
+              <line x1="3" y1="6" x2="21" y2="6"></line>
+              <line x1="3" y1="18" x2="21" y2="18"></line>
+            </svg>
+          </button>
+
           {/* Logo */}
           <Link href="/" className="logo">
             SADAF<span>CAKES</span>
@@ -148,6 +164,44 @@ export default function Header() {
             </Link>
           </div>
         )}
+      </div>
+
+      {/* Mobile Menu Drawer Overlay */}
+      <div
+        className={`mobile-menu-overlay ${isMobileMenuOpen ? "open" : ""}`}
+        onClick={() => setIsMobileMenuOpen(false)}
+      />
+
+      {/* Mobile Menu Drawer */}
+      <div className={`mobile-menu-drawer ${isMobileMenuOpen ? "open" : ""}`}>
+        <div className="mobile-menu-header">
+          <h2>Menu</h2>
+          <button className="close-drawer-btn" onClick={() => setIsMobileMenuOpen(false)}>
+            ✕
+          </button>
+        </div>
+        <ul className="mobile-nav-links">
+          <li>
+            <Link href="/" className="mobile-nav-link" onClick={() => setIsMobileMenuOpen(false)}>
+              Home
+            </Link>
+          </li>
+          <li>
+            <Link href="/categories" className="mobile-nav-link" onClick={() => setIsMobileMenuOpen(false)}>
+              Categories
+            </Link>
+          </li>
+          <li>
+            <Link href="/#about" className="mobile-nav-link" onClick={() => setIsMobileMenuOpen(false)}>
+              About Us
+            </Link>
+          </li>
+        </ul>
+        <div className="mobile-menu-footer">
+          <a href="tel:+971581988276" className="btn btn-primary" style={{ width: "100%", textAlign: "center", textDecoration: "none", display: "block" }}>
+            Call Shop
+          </a>
+        </div>
       </div>
     </>
   );
